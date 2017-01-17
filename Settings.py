@@ -9,5 +9,5 @@ class Settings:
     def __init__(self):
         pass
     MONGO_CONNECTION_STRING = "mongodb://127.0.0.1:27017/"
-    DATABASE = "WebCrawling"
+    DATABASE = "WebCrawling" 
     COLLECTION = "Dataset"
