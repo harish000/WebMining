@@ -1,6 +1,6 @@
 <snippet>
   <content><![CDATA[
-# ${1:Web Mining}
+# Web Mining
 A Python application to extract data from the web and run analysis on it.. 
 The code snippet allows you to scrape historic stock data from yahoo finance website, preprocess it, store it in MongoDB and run timeseries analysis on it. 
 Allows you to visualize the trend of stock returns over a period of one year. 
