@@ -24,6 +24,10 @@ from pymongo import MongoClient
  
 import matplotlib.pylab as plt 
  
+import numpy as np
+
+from statsmodels.tsa.stattools import adfuller
+ 
 def init_driver():
     driver = webdriver.Chrome("D:\Software\chromedriver_win32\chromedriver.exe") 
     driver.wait = WebDriverWait(driver, 5)
@@ -75,7 +79,7 @@ def parseSource(filename):
 def dataCleaning(df):
     df.dropna()
     df['date'] = pd.to_datetime(df['date'])
-    df.set_index(df['date'])
+    df = df.set_index('date', drop=False)
     df['open'] = df['open'].apply(lambda x: x.replace(',',''))
     df['high'] = df['high'].apply(lambda x: x.replace(',',''))
     df['low'] = df['low'].apply(lambda x: x.replace(',',''))
@@ -84,6 +88,7 @@ def dataCleaning(df):
     df['volume'] = df['volume'].apply(lambda x: x.replace(',',''))
     df[['open','high','low','close','adjclose','volume']] =  df[['open','high','low','close','adjclose','volume']].astype(float)
     print(df.dtypes)
+#    print(len(df.index.values))
     return df
     
 def pandasToMongo(df) :
@@ -93,8 +98,37 @@ def pandasToMongo(df) :
     print(collection.find_one())
 
 def analysis(df):
-#    plt.plot(df)    
-    print("Hello World")
+    ts = df['volume']
+    plt.plot(ts)
+    rolmean = pd.rolling_mean(ts, window=12)
+    rolstd = pd.rolling_std(ts, window=12)
+
+    ts_log = np.log(ts)
+    moving_avg = pd.rolling_mean(ts_log,12)
+
+
+    #Plot rolling statistics:
+    plt.figure(1)
+    orig = plt.plot(ts, color='blue',label='Original')
+    mean = plt.plot(rolmean, color='red', label='Rolling Mean')
+    std = plt.plot(rolstd, color='black', label = 'Rolling Std')
+    plt.legend(loc='best')
+    plt.title('Rolling Mean & Standard Deviation')
+      
+    plt.figure(2)  
+    red_trend = plt.plot(ts_log, color='green', label="Reduced Trend")
+    red_mean = plt.plot(moving_avg, color='red')
+    
+    plt.show(block=False)
+
+        
+    #Perform Dickey-Fuller test:
+    print( 'Results of Dickey-Fuller Test:')
+    dftest = adfuller(ts, autolag='AIC')
+    dfoutput = pd.Series(dftest[0:4], index=['Test Statistic','p-value','#Lags Used','Number of Observations Used'])
+    for key,value in dftest[4].items():
+        dfoutput['Critical Value (%s)'%key] = value
+    print(dfoutput)
      
 if __name__ == "__main__":
     driver = init_driver()
