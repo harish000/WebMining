@@ -93,7 +93,8 @@ def pandasToMongo(df) :
     print(collection.find_one())
 
 def analysis(df):
-    plt.plot(df)    
+#    plt.plot(df)    
+    print("Hello World")
      
 if __name__ == "__main__":
     driver = init_driver()
@@ -102,6 +103,6 @@ if __name__ == "__main__":
         dataset = parseSource(source)
     dataset = dataCleaning(dataset)
 #    pandasToMongo(dataset)
-    analysis(dataset)
+    analysis(dataset) 
 #    time.sleep(5)
 #    driver.quit()
